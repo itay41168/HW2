@@ -1,0 +1,53 @@
+@startuml
+
+[*] --> OrderProcess : Begin Order Process
+
+state OrderProcess {
+    [*] --> RegularOrder : Start with Regular Order
+
+    state RegularOrder {
+        [*] --> CollectRegularOrderDetails : Enter Regular Order Details
+        CollectRegularOrderDetails --> CombineSelections : Combine Wine Selections
+        CombineSelections --> MainCustomerAssignment : Assign Main Customer
+        MainCustomerAssignment --> TrackCustomerInfo : Record Customer Details
+        TrackCustomerInfo --> ScheduleDelivery : Schedule Delivery
+
+        ScheduleDelivery --> CheckForUrgency : Assess Need for Urgent Handling
+
+        CheckForUrgency --> SwitchToUrgent : Switch to Urgent Order
+    }
+
+    state UrgentOrder {
+        [*] --> CollectUrgentOrderDetails : Enter Urgent Order Details
+        CollectUrgentOrderDetails --> SetPriority : Define Priority Level
+        SetPriority --> SpecifyDeliveryTime : Specify Expected Delivery Time
+
+        SpecifyDeliveryTime --> TrackUrgentCustomerInfo : Record Urgent Customer Details
+        TrackUrgentCustomerInfo --> ImmediateDispatch : Immediate Notification to GalGalim
+    }
+
+    RegularOrder --> DeliveryHandling : Proceed to Delivery
+    UrgentOrder --> DeliveryHandling : Proceed to Delivery
+}
+
+state DeliveryHandling {
+    [*] --> InTransit : Delivery En Route
+
+    InTransit --> IssueDetected : Issue Detected
+    IssueDetected --> IfRegular : For Regular Orders
+    IfRegular --> CancelOrReschedule : Cancel or Reschedule
+
+    IssueDetected --> IfUrgent : For Urgent Orders
+    IfUrgent --> ResolveAndContinue : Continue to Destination
+
+    InTransit --> SuccessfulDelivery : Delivered
+    SuccessfulDelivery --> AwaitingPayment : Payment Required
+    AwaitingPayment --> PaymentReceived : Capture Payment
+    PaymentReceived --> Complete : Process Completed
+    PaymentReceived --> RefundIssued : Refund if Delivery Fails
+}
+
+OrderProcess --> CancelledOrder : Customer Cancels Order
+CancelledOrder --> [*]
+
+@enduml
